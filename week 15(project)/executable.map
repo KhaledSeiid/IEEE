@@ -1,0 +1,113 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+SRAM             0x20000000         0x00005000         xrw
+FLASH            0x08000000         0x00020000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD main.o
+LOAD lcd.o
+LOAD Stm32_F103C6_GPIO.o
+LOAD startup.o
+
+.text           0x08000000      0x99c
+ *(.isr_vector)
+ .isr_vector    0x08000000        0x8 startup.o
+                0x08000000                Vectors
+ *(.text)
+ .text          0x08000008       0xbc main.o
+                0x08000008                clock_init
+                0x08000030                wait_ms
+                0x0800006a                main
+ .text          0x080000c4      0x408 lcd.o
+                0x080000fe                LCD_GPIO_init
+                0x08000258                lcd_is_busy
+                0x08000330                lcd_kick
+                0x0800035c                lcd_send_command
+                0x080003a0                lcd_init
+                0x080003d4                lcd_send_char
+                0x08000418                lcd_send_string
+                0x08000472                lcd_set_position
+                0x080004bc                lcd_clear
+ .text          0x080004cc      0x43c Stm32_F103C6_GPIO.o
+                0x080004cc                Get_Bit_Location
+                0x0800063a                MCAL_GPIO_Init
+                0x08000732                MCAL_GPIO_DeInit
+                0x08000804                MCAL_GPIO_ReadPin
+                0x08000832                MCAL_GPIO_ReadPort
+                0x0800084c                MCAL_GPIO_WritePort
+                0x08000868                MCAL_GPIO_WritePin
+                0x08000896                MCAL_GPIO_TogglePin
+                0x080008b8                MCAL_GPIO_LockPin
+ .text          0x08000908       0x8c startup.o
+                0x08000908                Default_Handler
+                0x0800090e                Reset_Handler
+ *(.rodata)
+ .rodata        0x08000994        0x8 main.o
+                0x0800099c                . = ALIGN (0x4)
+                0x0800099c                _etext = .
+
+.glue_7         0x0800099c        0x0
+ .glue_7        0x0800099c        0x0 linker stubs
+
+.glue_7t        0x0800099c        0x0
+ .glue_7t       0x0800099c        0x0 linker stubs
+
+.vfp11_veneer   0x0800099c        0x0
+ .vfp11_veneer  0x0800099c        0x0 linker stubs
+
+.v4_bx          0x0800099c        0x0
+ .v4_bx         0x0800099c        0x0 linker stubs
+
+.iplt           0x0800099c        0x0
+ .iplt          0x0800099c        0x0 main.o
+
+.rel.dyn        0x0800099c        0x0
+ .rel.iplt      0x0800099c        0x0 main.o
+
+.data           0x20000000        0x0 load address 0x0800099c
+                0x20000000                _sdata = .
+ *(.data)
+ .data          0x20000000        0x0 main.o
+ .data          0x20000000        0x0 lcd.o
+ .data          0x20000000        0x0 Stm32_F103C6_GPIO.o
+ .data          0x20000000        0x0 startup.o
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _edata = .
+
+.igot.plt       0x20000000        0x0 load address 0x0800099c
+ .igot.plt      0x20000000        0x0 main.o
+
+.bss            0x20000000        0x4 load address 0x0800099c
+                0x20000000                _sbss = .
+ *(.bss)
+ .bss           0x20000000        0x0 main.o
+ .bss           0x20000000        0x4 lcd.o
+                0x20000000                PinCfg
+ .bss           0x20000004        0x0 Stm32_F103C6_GPIO.o
+ .bss           0x20000004        0x0 startup.o
+                0x20000004                . = ALIGN (0x4)
+                0x20000004                _ebss = .
+OUTPUT(executble.elf elf32-littlearm)
+LOAD linker stubs
+
+.comment        0x00000000       0x49
+ .comment       0x00000000       0x49 main.o
+                                 0x4a (size before relaxing)
+ .comment       0x00000049       0x4a lcd.o
+ .comment       0x00000049       0x4a Stm32_F103C6_GPIO.o
+ .comment       0x00000049       0x4a startup.o
+
+.ARM.attributes
+                0x00000000       0x2d
+ .ARM.attributes
+                0x00000000       0x2d main.o
+ .ARM.attributes
+                0x0000002d       0x2d lcd.o
+ .ARM.attributes
+                0x0000005a       0x2d Stm32_F103C6_GPIO.o
+ .ARM.attributes
+                0x00000087       0x2d startup.o
